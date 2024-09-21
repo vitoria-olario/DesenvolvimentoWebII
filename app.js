@@ -20,7 +20,7 @@ app.get("/", function(req, res){
 
 app.get("/consultar", function(req, res){
     post.findAll().then(function(posts){
-        res.render("segunda_pagina", {posts})
+        res.render("consultar", {posts})
         console.log(posts)
     })
 })
@@ -53,26 +53,19 @@ app.post("/atualizar", function(req,res) {
     )
 })
 
-app.get("/excluir/:id", function(req,res){
-    post.destroy({where: {'id' :req.params.id}}).then(function(){
-        console.log("Dados excluidos com sucesso!")
-        res.render("primeira_pagina")
-    })
-})
 
 app.get("/confirmar-exclusao/:id", function(req, res) {
-    post.findByPk(req.params.id).then(function(post) {
-        if (post) {
-            res.render("confirmar_exclusao", { post });
-        } else {
-            res.status(404).send("Post não encontrado");
-        }
-    }).catch(function(erro) {
-        console.log("Erro ao buscar o post: " + erro);
-        res.status(500).send("Erro interno do servidor");
+    post.findAll({ where: { id: req.params.id } }).then(function(posts) {
+        res.render("excluir", { posts });
     });
 });
 
+app.get("/excluir/:id", function(req, res) {
+    post.destroy({ where: { id: req.params.id } }).then(function() {
+        console.log("Dados excluídos com sucesso!");
+        res.redirect("/");
+    });
+});
 
 //gera dinamicamente o conteúdo HTML a partir de um template Handlebars e insere o resultado na estrutura da página web
 app.post("/cadastrar", function(req,res){
